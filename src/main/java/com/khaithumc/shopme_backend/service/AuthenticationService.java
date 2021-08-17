@@ -1,7 +1,5 @@
 package com.khaithumc.shopme_backend.service;
 
-
-
 import com.khaithumc.shopme_backend.config.MessageStrings;
 import com.khaithumc.shopme_backend.exceptions.AuthenticationFailException;
 import com.khaithumc.shopme_backend.model.AuthenticationToken;

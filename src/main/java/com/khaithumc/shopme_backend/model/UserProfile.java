@@ -1,5 +1,7 @@
 package com.khaithumc.shopme_backend.model;
 
+import com.khaithumc.shopme_backend.dto.user.UserProfileDto;
+
 import javax.persistence.*;
 
 @Entity
@@ -10,55 +12,59 @@ public class UserProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String username;
-    private String email;
-    private String firstName;
-    private String lastName;
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "address")
+    private String address;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
     public UserProfile() {}
 
-    public UserProfile(Integer id, String username, String email, String firstName, String lastName) {
-        super();
+    public UserProfile(Integer id, String phone, String address) {
         this.id = id;
-        this.username = username;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.phone = phone;
+        this.address = address;
+    }
+
+    public  UserProfile(UserProfileDto userProfileDto, User user) {
+        this.phone = userProfileDto.getPhone();
+        this.address = userProfileDto.getAddress();
+        this.user = user;
     }
 
     public Integer getId() {
         return id;
     }
 
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
     public void setId(Integer id) {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
-    }
-    public void setUsername(String username) {
-        this.username = username;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setUser(User user) {
+        this.user = user;
     }
 }

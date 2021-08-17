@@ -36,7 +36,6 @@ public class UserService {
 
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
-
     public ResponseDto signUp(SignupDto signupDto)  throws CustomException {
         // Check to see if the current email address has already been registered.
         if (Helper.notNull(userRepository.findByEmail(signupDto.getEmail()))) {
@@ -53,7 +52,7 @@ public class UserService {
         }
 
 
-        User user = new User(signupDto.getFirstName(), signupDto.getLastName(), signupDto.getEmail(), Role.user, encryptedPassword );
+        User user = new User(signupDto.getEmail(), Role.user, encryptedPassword );
 
         User createdUser;
         try {
@@ -123,7 +122,7 @@ public class UserService {
             logger.error("hashing password failed {}", e.getMessage());
         }
 
-        User user = new User(userCreateDto.getFirstName(), userCreateDto.getLastName(), userCreateDto.getEmail(), userCreateDto.getRole(), encryptedPassword );
+        User user = new User(userCreateDto.getEmail(), userCreateDto.getRole(), encryptedPassword );
         User createdUser;
         try {
             createdUser = userRepository.save(user);
@@ -155,5 +154,9 @@ public class UserService {
             return true;
         }
         return false;
+    }
+
+    public User findUserById(int id) {
+        return userRepository.findById(id);
     }
 }
