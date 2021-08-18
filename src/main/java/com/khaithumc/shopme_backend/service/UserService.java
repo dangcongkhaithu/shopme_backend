@@ -36,7 +36,7 @@ public class UserService {
 
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    public ResponseDto signUp(SignupDto signupDto)  throws CustomException {
+    public ResponseDto signUp(SignupDto signupDto, Role role)  throws CustomException {
         // Check to see if the current email address has already been registered.
         if (Helper.notNull(userRepository.findByEmail(signupDto.getEmail()))) {
             // If the email address has been registered then throw an exception.
@@ -52,7 +52,7 @@ public class UserService {
         }
 
 
-        User user = new User(signupDto.getEmail(), Role.user, encryptedPassword );
+        User user = new User(signupDto.getEmail(), role, encryptedPassword );
 
         User createdUser;
         try {
@@ -99,7 +99,7 @@ public class UserService {
     }
 
 
-    String hashPassword(String password) throws NoSuchAlgorithmException {
+    public String hashPassword(String password) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("MD5");
         md.update(password.getBytes());
         byte[] digest = md.digest();

@@ -5,6 +5,7 @@ import com.khaithumc.shopme_backend.dto.ResponseDto;
 import com.khaithumc.shopme_backend.dto.user.SignInDto;
 import com.khaithumc.shopme_backend.dto.user.SignInResponseDto;
 import com.khaithumc.shopme_backend.dto.user.SignupDto;
+import com.khaithumc.shopme_backend.enums.Role;
 import com.khaithumc.shopme_backend.exceptions.AuthenticationFailException;
 import com.khaithumc.shopme_backend.exceptions.CustomException;
 import com.khaithumc.shopme_backend.model.User;
@@ -38,7 +39,7 @@ public class UserController {
 
     @PostMapping("/signUp")
     public ResponseDto Signup(@RequestBody SignupDto signupDto) throws CustomException {
-        return userService.signUp(signupDto);
+        return userService.signUp(signupDto, Role.user);
     }
 
     //TODO token should be updated
