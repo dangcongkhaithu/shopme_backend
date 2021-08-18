@@ -3,6 +3,7 @@ package com.khaithumc.shopme_backend.controller;
 import com.khaithumc.shopme_backend.common.ApiResponse;
 import com.khaithumc.shopme_backend.dto.product.ProductDto;
 import com.khaithumc.shopme_backend.model.ChildCategory;
+import com.khaithumc.shopme_backend.model.Product;
 import com.khaithumc.shopme_backend.service.ChildCategoryService;
 import com.khaithumc.shopme_backend.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,5 +49,12 @@ public class ProductController {
         ChildCategory category = optionalCategory.get();
         productService.updateProduct(productID, productDto, category);
         return new ResponseEntity<ApiResponse>(new ApiResponse(true, "Product has been updated"), HttpStatus.OK);
+    }
+
+    @GetMapping("/search/{keyword}")
+    public ResponseEntity<List<Product>> search(@PathVariable String keyword) {
+        List<Product> products = productService.search(keyword);
+
+        return  new ResponseEntity<List<Product>>(products, HttpStatus.OK);
     }
 }

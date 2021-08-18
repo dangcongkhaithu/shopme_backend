@@ -3,18 +3,24 @@ package com.khaithumc.shopme_backend.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.khaithumc.shopme_backend.dto.product.ProductDto;
 
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity
 @Table(name = "products")
+@Indexed
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Field
     private @NotNull String name;
+
     private @NotNull String imageURL;
     private @NotNull double price;
     private @NotNull String description;
@@ -27,7 +33,6 @@ public class Product {
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
     private List<WishList> wishListList;
-
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
@@ -42,7 +47,6 @@ public class Product {
     }
 
     public Product(String name, String imageURL, double price, String description, ChildCategory category) {
-        super();
         this.name = name;
         this.imageURL = imageURL;
         this.price = price;

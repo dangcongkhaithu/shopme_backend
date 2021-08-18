@@ -5,9 +5,15 @@ import com.khaithumc.shopme_backend.exceptions.ProductNotExistException;
 import com.khaithumc.shopme_backend.model.ChildCategory;
 import com.khaithumc.shopme_backend.model.Product;
 import com.khaithumc.shopme_backend.repository.ProductRepository;
+import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.jpa.Search;
+import org.hibernate.search.query.dsl.BooleanJunction;
+import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -56,5 +62,11 @@ public class ProductService {
         return optionalProduct.get();
     }
 
+    @PersistenceContext
+    private EntityManager em;
+
+    public List<Product> search(String keywords) {
+        return productRepository.search(keywords);
+    }
 
 }

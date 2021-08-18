@@ -3,7 +3,6 @@ package com.khaithumc.shopme_backend.service;
 import com.khaithumc.shopme_backend.model.Category;
 import com.khaithumc.shopme_backend.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
-
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
