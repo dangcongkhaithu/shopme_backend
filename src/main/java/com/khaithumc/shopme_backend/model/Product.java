@@ -22,7 +22,7 @@ public class Product {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
-    Category category;
+    ChildCategory category;
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
@@ -33,7 +33,7 @@ public class Product {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
     private List<Cart> carts;
 
-    public Product(ProductDto productDto, Category category) {
+    public Product(ProductDto productDto, ChildCategory category) {
         this.name = productDto.getName();
         this.imageURL = productDto.getImageURL();
         this.description = productDto.getDescription();
@@ -41,7 +41,7 @@ public class Product {
         this.category = category;
     }
 
-    public Product(String name, String imageURL, double price, String description, Category category) {
+    public Product(String name, String imageURL, double price, String description, ChildCategory category) {
         super();
         this.name = name;
         this.imageURL = imageURL;
@@ -93,11 +93,11 @@ public class Product {
         this.description = description;
     }
 
-    public Category getCategory() {
+    public ChildCategory getCategory() {
         return category;
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(ChildCategory category) {
         this.category = category;
     }
 

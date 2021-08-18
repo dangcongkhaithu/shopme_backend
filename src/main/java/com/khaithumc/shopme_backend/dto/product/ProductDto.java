@@ -1,7 +1,6 @@
 package com.khaithumc.shopme_backend.dto.product;
 
 import com.khaithumc.shopme_backend.model.Product;
-
 import javax.validation.constraints.NotNull;
 
 public class ProductDto {

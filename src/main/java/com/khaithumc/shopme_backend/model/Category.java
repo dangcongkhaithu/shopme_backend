@@ -23,7 +23,7 @@ public class Category {
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
-    Set<Product> products;
+    Set<ChildCategory> childCategories;
 
     public Category() {
     }
@@ -37,6 +37,14 @@ public class Category {
         this.categoryName = categoryName;
         this.description = description;
         this.imageUrl = imageUrl;
+    }
+
+    public Set<ChildCategory> getChildCategories() {
+        return childCategories;
+    }
+
+    public void setChildCategories(Set<ChildCategory> childCategories) {
+        this.childCategories = childCategories;
     }
 
     public String getCategoryName() {
@@ -53,14 +61,6 @@ public class Category {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Set<Product> getProducts() {
-        return products;
-    }
-
-    public void setProducts(Set<Product> products) {
-        this.products = products;
     }
 
     @Override

@@ -2,8 +2,8 @@ package com.khaithumc.shopme_backend.controller;
 
 import com.khaithumc.shopme_backend.common.ApiResponse;
 import com.khaithumc.shopme_backend.dto.product.ProductDto;
-import com.khaithumc.shopme_backend.model.Category;
-import com.khaithumc.shopme_backend.service.CategoryService;
+import com.khaithumc.shopme_backend.model.ChildCategory;
+import com.khaithumc.shopme_backend.service.ChildCategoryService;
 import com.khaithumc.shopme_backend.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ public class ProductController {
     @Autowired
     ProductService productService;
     @Autowired
-    CategoryService categoryService;
+    ChildCategoryService categoryService;
 
     @GetMapping("/")
     public ResponseEntity<List<ProductDto>> getProducts() {
@@ -30,22 +30,22 @@ public class ProductController {
 
     @PostMapping("/add")
     public ResponseEntity<ApiResponse> addProduct(@RequestBody ProductDto productDto) {
-        Optional<Category> optionalCategory = categoryService.readCategory(productDto.getCategoryId());
+        Optional<ChildCategory> optionalCategory = categoryService.readCategory(productDto.getCategoryId());
         if (!optionalCategory.isPresent()) {
             return new ResponseEntity<ApiResponse>(new ApiResponse(false, "category is invalid"), HttpStatus.CONFLICT);
         }
-        Category category = optionalCategory.get();
+        ChildCategory category = optionalCategory.get();
         productService.addProduct(productDto, category);
         return new ResponseEntity<ApiResponse>(new ApiResponse(true, "Product has been added"), HttpStatus.CREATED);
     }
 
     @PostMapping("/update/{productID}")
     public ResponseEntity<ApiResponse> updateProduct(@PathVariable("productID") Integer productID, @RequestBody @Valid ProductDto productDto) {
-        Optional<Category> optionalCategory = categoryService.readCategory(productDto.getCategoryId());
+        Optional<ChildCategory> optionalCategory = categoryService.readCategory(productDto.getCategoryId());
         if (!optionalCategory.isPresent()) {
             return new ResponseEntity<ApiResponse>(new ApiResponse(false, "category is invalid"), HttpStatus.CONFLICT);
         }
-        Category category = optionalCategory.get();
+        ChildCategory category = optionalCategory.get();
         productService.updateProduct(productID, productDto, category);
         return new ResponseEntity<ApiResponse>(new ApiResponse(true, "Product has been updated"), HttpStatus.OK);
     }

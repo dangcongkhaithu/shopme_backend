@@ -2,7 +2,7 @@ package com.khaithumc.shopme_backend.service;
 
 import com.khaithumc.shopme_backend.dto.product.ProductDto;
 import com.khaithumc.shopme_backend.exceptions.ProductNotExistException;
-import com.khaithumc.shopme_backend.model.Category;
+import com.khaithumc.shopme_backend.model.ChildCategory;
 import com.khaithumc.shopme_backend.model.Product;
 import com.khaithumc.shopme_backend.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,17 +32,17 @@ public class ProductService {
         return productDto;
     }
 
-    public static Product getProductFromDto(ProductDto productDto, Category category) {
+    public static Product getProductFromDto(ProductDto productDto, ChildCategory category) {
         Product product = new Product(productDto, category);
         return product;
     }
 
-    public void addProduct(ProductDto productDto, Category category) {
+    public void addProduct(ProductDto productDto, ChildCategory category) {
         Product product = getProductFromDto(productDto, category);
         productRepository.save(product);
     }
 
-    public void updateProduct(Integer productID, ProductDto productDto, Category category) {
+    public void updateProduct(Integer productID, ProductDto productDto, ChildCategory category) {
         Product product = getProductFromDto(productDto, category);
         product.setId(productID);
         productRepository.save(product);
