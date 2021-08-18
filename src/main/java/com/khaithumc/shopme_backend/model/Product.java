@@ -12,13 +12,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "products")
-@Indexed
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Field
     private @NotNull String name;
 
     private @NotNull String imageURL;
@@ -37,6 +35,10 @@ public class Product {
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
     private List<Cart> carts;
+
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "product")
+    private List<Image> images;
 
     public Product(ProductDto productDto, ChildCategory category) {
         this.name = productDto.getName();
@@ -114,5 +116,13 @@ public class Product {
                 ", price=" + price +
                 ", description='" + description + '\'' +
                 '}';
+    }
+
+    public List<Image> getImages() {
+        return images;
+    }
+
+    public void setImages(List<Image> images) {
+        this.images = images;
     }
 }

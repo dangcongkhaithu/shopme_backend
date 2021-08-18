@@ -23,6 +23,15 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
+    public Product readCategory(String productName) {
+        return productRepository.findByName(productName);
+    }
+
+    public Optional<Product> readCategory(Integer productId) {
+        return productRepository.findById(productId);
+    }
+
+
     public List<ProductDto> listProducts() {
         List<Product> products = productRepository.findAll();
         List<ProductDto> productDtos = new ArrayList<>();
