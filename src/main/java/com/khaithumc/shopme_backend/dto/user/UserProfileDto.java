@@ -6,6 +6,13 @@ public class UserProfileDto {
     private String phone;
     private String address;
 
+    public UserProfileDto(String firstname, String lastname, String phone, String address) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.phone = phone;
+        this.address = address;
+    }
+
     public String getFirstname() {
         return firstname;
     }

@@ -11,14 +11,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ShopmeBackendApplication /*implements CommandLineRunner*/ {
 
-   /* @Autowired
+    /*@Autowired
     private UserService userService;*/
 
     public static void main(String[] args) {
         SpringApplication.run(ShopmeBackendApplication.class, args);
     }
 
-    /*@Override
+   /* @Override
     public void run(String... args) throws Exception {
         SignupDto signupDto = new SignupDto();
         signupDto.setEmail("admin@gmail.com");

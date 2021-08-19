@@ -3,16 +3,15 @@ package com.khaithumc.shopme_backend.service;
 
 import com.khaithumc.shopme_backend.config.MessageStrings;
 import com.khaithumc.shopme_backend.dto.ResponseDto;
-import com.khaithumc.shopme_backend.dto.user.SignInDto;
-import com.khaithumc.shopme_backend.dto.user.SignInResponseDto;
-import com.khaithumc.shopme_backend.dto.user.SignupDto;
-import com.khaithumc.shopme_backend.dto.user.UserCreateDto;
+import com.khaithumc.shopme_backend.dto.user.*;
 import com.khaithumc.shopme_backend.enums.ResponseStatus;
 import com.khaithumc.shopme_backend.enums.Role;
 import com.khaithumc.shopme_backend.exceptions.AuthenticationFailException;
 import com.khaithumc.shopme_backend.exceptions.CustomException;
 import com.khaithumc.shopme_backend.model.AuthenticationToken;
 import com.khaithumc.shopme_backend.model.User;
+import com.khaithumc.shopme_backend.model.UserProfile;
+import com.khaithumc.shopme_backend.repository.UserProfileRepository;
 import com.khaithumc.shopme_backend.repository.UserRepository;
 import com.khaithumc.shopme_backend.utils.Helper;
 import org.slf4j.Logger;
@@ -30,6 +29,9 @@ public class UserService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    UserProfileRepository userProfileRepository;
 
     @Autowired
     AuthenticationService authenticationService;
@@ -58,6 +60,12 @@ public class UserService {
         try {
             // save the User
             createdUser = userRepository.save(user);
+
+            UserProfileDto userProfileDto = new UserProfileDto("","","","");
+            UserProfile userProfile = new UserProfile(userProfileDto, createdUser);
+            userProfileRepository.save(userProfile);
+
+
             // generate token for user
             final AuthenticationToken authenticationToken = new AuthenticationToken(createdUser);
             // save token in database

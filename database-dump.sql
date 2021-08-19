@@ -8,6 +8,8 @@
 -- Table structure for table `categories`
 -- create schema ecommerce char set utf8mb4 collate utf8mb4_0900_ai_ci;
 
+-- drop schema ecommerce;
+
 DROP TABLE IF EXISTS `categories`;
 CREATE TABLE `categories` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -75,18 +77,6 @@ CREATE TABLE `tokens` (
 --
 -- Table structure for table `user_profile`
 --
-
-DROP TABLE IF EXISTS `user_profile`;
-CREATE TABLE `user_profile` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `first_name` varchar(255) default null,
-  `last_name` varchar(255) default null,
-  `phone` varchar(255) DEFAULT NULL,
-  `address` varchar(255) DEFAULT NULL,
-  `user_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`),
-  constraint `fk_user_profile_users` foreign key (`user_id`) references `ecommerce`.`users` (`id`)
-);
 --
 -- Table structure for table `users`
 --
@@ -102,6 +92,18 @@ CREATE TABLE `users` (
 --
 -- Table structure for table `wishlist`
 --
+
+DROP TABLE IF EXISTS `user_profile`;
+CREATE TABLE `user_profile` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(255) default null,
+  `last_name` varchar(255) default null,
+  `phone` varchar(255) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `user_id` int(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  constraint `fk_user_profile_users` foreign key (`user_id`) references `ecommerce`.`users` (`id`)
+);
 
 DROP TABLE IF EXISTS `wishlist`;
 CREATE TABLE `wishlist` (
