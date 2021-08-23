@@ -13,5 +13,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     List<Product> search(String keyword);
 
     Product findByName(String productName);
+
+    Product findProductById(int id);
 }
 

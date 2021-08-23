@@ -2,6 +2,8 @@ package com.khaithumc.shopme_backend.controller;
 
 import com.khaithumc.shopme_backend.common.ApiResponse;
 import com.khaithumc.shopme_backend.dto.product.ProductDto;
+import com.khaithumc.shopme_backend.exceptions.AuthenticationFailException;
+import com.khaithumc.shopme_backend.exceptions.CartItemNotExistException;
 import com.khaithumc.shopme_backend.model.ChildCategory;
 import com.khaithumc.shopme_backend.model.Product;
 import com.khaithumc.shopme_backend.service.ChildCategoryService;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/product")
 public class ProductController {
     @Autowired
@@ -23,10 +26,16 @@ public class ProductController {
     @Autowired
     ChildCategoryService categoryService;
 
-    @GetMapping("/")
-    public ResponseEntity<List<ProductDto>> getProducts() {
+    @GetMapping("/list")
+    public ResponseEntity<List<ProductDto>> listProducts() {
         List<ProductDto> body = productService.listProducts();
         return new ResponseEntity<List<ProductDto>>(body, HttpStatus.OK);
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<List<Product>> getProducts() {
+        List<Product> body = productService.getAllProducts();
+        return new ResponseEntity<List<Product>>(body, HttpStatus.OK);
     }
 
     @PostMapping("/add")
@@ -56,5 +65,11 @@ public class ProductController {
         List<Product> products = productService.search(keyword);
 
         return  new ResponseEntity<List<Product>>(products, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete/{productId}")
+    public ResponseEntity<ApiResponse> deleteProduct(@PathVariable("productId") int productId) throws AuthenticationFailException, CartItemNotExistException {
+        productService.deleteProduct(productId);
+        return new ResponseEntity<ApiResponse>(new ApiResponse(true, "Item has been removed"), HttpStatus.OK);
     }
 }

@@ -5,8 +5,9 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
-@Table(name = "orderitems")
+@Table(name = "order_item")
 public class OrderItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -30,13 +31,14 @@ public class OrderItem {
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;
 
-    public OrderItem(){}
+    public OrderItem() {
+    }
 
     public OrderItem(Order order, @NotNull Product product, @NotNull int quantity, @NotNull double price) {
         this.product = product;
         this.quantity = quantity;
         this.price = price;
-        this.order= order;
+        this.order = order;
         this.createdDate = new Date();
     }
 

@@ -1,29 +1,30 @@
 package com.khaithumc.shopme_backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.khaithumc.shopme_backend.dto.order.PlaceOrderDto;
+import com.khaithumc.shopme_backend.dto.order.AddOrderDto;
+import com.khaithumc.shopme_backend.dto.order.OrderDto;
+import com.khaithumc.shopme_backend.enums.Status;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name="orders")
+@Table(name = "orders")
 public class Order {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private Status status;
+
+    @Column(name = "total_price")
+    private double totalPrice;
 
     @Column(name = "created_date")
     private Date createdDate;
-
-    @Column(name = "total_price")
-    private Double totalPrice;
-
-    @Column(name = "session_id")
-    private String sessionId;
 
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
     private List<OrderItem> orderItems;
@@ -33,22 +34,47 @@ public class Order {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    public Order() {
+    @ManyToOne()
+    @JsonIgnore
+    @JoinColumn(name = "shipping_info_id", referencedColumnName = "id")
+    private ShippingInfo shippingInfo;
+
+    public User getUser() {
+        return user;
     }
 
-    public Order(PlaceOrderDto orderDto, User user, String sessionId){
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Order(Integer id, Status status, double totalPrice, Date createdDate, List<OrderItem> orderItems, User user, ShippingInfo shippingInfo) {
+        this.id = id;
+        this.status = status;
+        this.totalPrice = totalPrice;
+        this.createdDate = createdDate;
+        this.orderItems = orderItems;
+        this.user = user;
+        this.shippingInfo = shippingInfo;
+    }
+
+    public Order(OrderDto orderDto, User user, ShippingInfo shippingInfo) {
+        this.shippingInfo = shippingInfo;
         this.user = user;
         this.createdDate = new Date();
         this.totalPrice = orderDto.getTotalPrice();
-        this.sessionId = sessionId;
+        this.status = orderDto.getStatus();
     }
 
-    public List<OrderItem> getOrderItems() {
-        return orderItems;
+    public Order() {
+
     }
 
-    public void setOrderItems(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
+    public double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     public Integer getId() {
@@ -59,6 +85,13 @@ public class Order {
         this.id = id;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 
     public Date getCreatedDate() {
         return createdDate;
@@ -68,27 +101,11 @@ public class Order {
         this.createdDate = createdDate;
     }
 
-    public Double getTotalPrice() {
-        return totalPrice;
+    public ShippingInfo getShippingInfo() {
+        return shippingInfo;
     }
 
-    public void setTotalPrice(Double totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
+    public void setShippingInfo(ShippingInfo shippingInfo) {
+        this.shippingInfo = shippingInfo;
     }
 }

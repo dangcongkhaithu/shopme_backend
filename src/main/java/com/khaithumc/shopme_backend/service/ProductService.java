@@ -42,6 +42,10 @@ public class ProductService {
         return productDtos;
     }
 
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
+    }
+
     public static ProductDto getDtoFromProduct(Product product) {
         ProductDto productDto = new ProductDto(product);
         return productDto;
@@ -71,11 +75,12 @@ public class ProductService {
         return optionalProduct.get();
     }
 
-    @PersistenceContext
-    private EntityManager em;
-
     public List<Product> search(String keywords) {
         return productRepository.search(keywords);
+    }
+
+    public void deleteProduct(int id) {
+        productRepository.deleteById(id);
     }
 
 }

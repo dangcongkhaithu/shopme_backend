@@ -2,26 +2,22 @@ package com.khaithumc.shopme_backend.service;
 
 import com.khaithumc.shopme_backend.dto.cart.CartDto;
 import com.khaithumc.shopme_backend.dto.cart.CartItemDto;
-import com.khaithumc.shopme_backend.dto.checkout.CheckoutItemDto;
-import com.khaithumc.shopme_backend.dto.order.PlaceOrderDto;
+import com.khaithumc.shopme_backend.dto.order.GetOrderDto;
+import com.khaithumc.shopme_backend.dto.order.AddOrderDto;
+import com.khaithumc.shopme_backend.dto.order.OrderDto;
+import com.khaithumc.shopme_backend.dto.order.UpdateOrderDto;
+import com.khaithumc.shopme_backend.enums.Status;
 import com.khaithumc.shopme_backend.exceptions.OrderNotFoundException;
-import com.khaithumc.shopme_backend.model.Order;
-import com.khaithumc.shopme_backend.model.OrderItem;
-import com.khaithumc.shopme_backend.model.User;
+import com.khaithumc.shopme_backend.model.*;
 import com.khaithumc.shopme_backend.repository.OrderRepository;
-import com.stripe.Stripe;
-import com.stripe.exception.StripeException;
-import com.stripe.model.checkout.Session;
-import com.stripe.param.checkout.SessionCreateParams;
+import com.khaithumc.shopme_backend.repository.ShippingInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 
 @Service
 @Transactional
@@ -31,100 +27,91 @@ public class OrderService {
     private OrderRepository orderRepository;
 
     @Autowired
+    private OrderItemService orderItemService;
+
+    @Autowired
     private CartService cartService;
 
     @Autowired
-    OrderItemsService orderItemsService;
+    private UserProfileService userProfileService;
 
-    @Value("${BASE_URL}")
-    private String baseURL;
+    @Autowired
+    private ShippingInfoRepository shippingInfoRepository;
 
-    @Value("${STRIPE_SECRET_KEY}")
-    private String apiKey;
-
-    public Order saveOrder(PlaceOrderDto orderDto, User user, String sessionID){
-        Order order = getOrderFromDto(orderDto, user, sessionID);
+    public Order saveOrder(OrderDto orderDto, User user, ShippingInfo shippingInfo) {
+        Order order = new Order(orderDto, user, shippingInfo);
         return orderRepository.save(order);
     }
 
-    private Order getOrderFromDto(PlaceOrderDto orderDto, User user, String sessionID) {
-        Order order = new Order(orderDto, user,sessionID);
-        return order;
+    public ShippingInfo saveShippingInfo(User user) {
+        UserProfile userProfile = userProfileService.findUserProfileByUserId(user.getId());
+        ShippingInfo shippingInfo = new ShippingInfo();
+        shippingInfo.setFullName(userProfile.getFirstname() + " " + userProfile.getLastname());
+        shippingInfo.setPhone(userProfile.getPhone());
+        shippingInfo.setAddress(userProfile.getAddress());
+        return shippingInfoRepository.save(shippingInfo);
     }
 
-    public List<Order> listOrders(User user) {
-        List<Order> orderList = orderRepository.findAllByUserOrderByCreatedDateDesc(user);
-        return orderList;
-    }
-
-    public Order getOrder(int orderId) throws OrderNotFoundException {
-        Optional<Order> order = orderRepository.findById(orderId);
-        if (order.isPresent()) {
-            return order.get();
-        }
-        throw new OrderNotFoundException("Order not found");
-    }
-
-
-    public void placeOrder(User user, String sessionId) {
+    public void placeOrder(User user) {
         CartDto cartDto = cartService.listCartItems(user);
+        ShippingInfo shippingInfo = saveShippingInfo(user);
 
-        PlaceOrderDto placeOrderDto = new PlaceOrderDto();
-        placeOrderDto.setUser(user);
-        placeOrderDto.setTotalPrice(cartDto.getTotalCost());
+        OrderDto orderDto = new OrderDto();
+        orderDto.setUser(user);
+        orderDto.setTotalPrice(cartDto.getTotalCost());
+        orderDto.setStatus(Status.ordered);
+        orderDto.setShippingInfo(shippingInfo);
 
-        Order newOrder = saveOrder(placeOrderDto, user, sessionId);
+
+        Order newOrder = saveOrder(orderDto, user, shippingInfo);
         List<CartItemDto> cartItemDtoList = cartDto.getCartItems();
         for (CartItemDto cartItemDto : cartItemDtoList) {
-            OrderItem orderItem = new OrderItem(
-                    newOrder,
-                    cartItemDto.getProduct(),
-                    cartItemDto.getQuantity(),
-                    cartItemDto.getProduct().getPrice());
-            orderItemsService.addOrderedProducts(orderItem);
+            OrderItem orderItem = new OrderItem(newOrder, cartItemDto.getProduct(), cartItemDto.getQuantity(), cartItemDto.getProduct().getPrice());
+            orderItemService.addOrderProduct(orderItem);
         }
         cartService.deleteUserCartItems(user);
     }
 
-    SessionCreateParams.LineItem.PriceData createPriceData(CheckoutItemDto checkoutItemDto) {
-        return SessionCreateParams.LineItem.PriceData.builder()
-                .setCurrency("usd")
-                .setUnitAmount( ((long) checkoutItemDto.getPrice()) * 100)
-                .setProductData(
-                        SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                                .setName(checkoutItemDto.getProductName())
-                                .build())
-                .build();
-    }
-
-    SessionCreateParams.LineItem createSessionLineItem(CheckoutItemDto checkoutItemDto) {
-        return SessionCreateParams.LineItem.builder()
-                .setPriceData(createPriceData(checkoutItemDto))
-                .setQuantity(Long.parseLong(String.valueOf(checkoutItemDto.getQuantity())))
-                .build();
-    }
-
-    public Session createSession(List<CheckoutItemDto> checkoutItemDtoList) throws StripeException {
-
-        String successURL = baseURL + "payment/success";
-        String failedURL = baseURL + "payment/failed";
-
-        Stripe.apiKey = apiKey;
-
-        List<SessionCreateParams.LineItem> sessionItemsList = new ArrayList<SessionCreateParams.LineItem>();
-        for (CheckoutItemDto checkoutItemDto : checkoutItemDtoList) {
-            sessionItemsList.add(createSessionLineItem(checkoutItemDto));
+    public List<GetOrderDto> listOrders(User user) {
+        List<Order> orderList = orderRepository.findAllByUserOrderByCreatedDateDesc(user);
+        List<GetOrderDto> getOrderDtos = new ArrayList<>();
+        for (Order order : orderList) {
+            GetOrderDto getOrderDto = getDtoFromOrder(order, user);
+            getOrderDtos.add(getOrderDto);
         }
-
-        SessionCreateParams params = SessionCreateParams.builder()
-                .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
-                .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setCancelUrl(failedURL)
-                .addAllLineItem(sessionItemsList)
-                .setSuccessUrl(successURL)
-                .build();
-        return Session.create(params);
+        return getOrderDtos;
     }
+
+    public GetOrderDto getOrder(int orderId, User user) throws OrderNotFoundException {
+        Optional<Order> optionalOrder = orderRepository.findById(orderId);
+        if (optionalOrder.isPresent()) {
+            Order order = optionalOrder.get();
+            return getDtoFromOrder(order, user);
+        }
+        throw new OrderNotFoundException("Order not found");
+    }
+
+    public List<GetOrderDto> getAllOrders() {
+        List<Order> orders = orderRepository.findAll();
+        List<GetOrderDto> getOrderDtoList = new ArrayList<>();
+        for (Order order : orders) {
+            GetOrderDto getOrderDto = getDtoFromOrder(order, order.getUser());
+            getOrderDtoList.add(getOrderDto);
+        }
+        return getOrderDtoList;
+    }
+
+    public void updateStatus(UpdateOrderDto updateOrderDto) {
+        Order order = orderRepository.findOrderById(updateOrderDto.getId());
+        order.setStatus(updateOrderDto.getStatus());
+    }
+
+    public GetOrderDto getDtoFromOrder(Order order, User user) {
+        List<OrderItem> orderItems = orderItemService.getOrderItems(order);
+        ShippingInfo shippingInfo = shippingInfoRepository.findShippingInfoById(order.getShippingInfo().getId());
+        GetOrderDto getOrderDto = new GetOrderDto(order, orderItems, shippingInfo);
+        return getOrderDto;
+    }
+
+
 }
-
-

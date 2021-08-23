@@ -1,18 +1,18 @@
 package com.khaithumc.shopme_backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.khaithumc.shopme_backend.dto.cart.CartItemDto;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name="cart")
+@Table(name = "cart")
 public class Cart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
 
     @Column(name = "created_date")
     private Date createdDate;
@@ -26,16 +26,22 @@ public class Cart {
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
 
-
     private int quantity;
 
     public Cart() {
     }
 
-    public Cart(Product product, int quantity, User user){
+    public Cart(Product product, int quantity, User user) {
         this.user = user;
         this.product = product;
         this.quantity = quantity;
+        this.createdDate = new Date();
+    }
+
+    public Cart(CartItemDto cartItemDto, User user) {
+        this.user = user;
+        this.product = cartItemDto.getProduct();
+        this.quantity = cartItemDto.getQuantity();
         this.createdDate = new Date();
     }
 

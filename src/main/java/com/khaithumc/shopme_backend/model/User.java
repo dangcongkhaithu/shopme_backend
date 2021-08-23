@@ -69,11 +69,11 @@ public class User {
     public User() {
     }
 
-    public List<Order> getOrders() {
+    /*public List<Order> getOrders() {
         return orders;
     }
 
     public void setOrders(List<Order> orders) {
         this.orders = orders;
-    }
+    }*/
 }

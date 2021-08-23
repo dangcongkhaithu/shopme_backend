@@ -17,6 +17,7 @@ public class Category {
 
     private @NotBlank String description;
 
+    @Column(name = "image_url")
     private @NotBlank String imageUrl;
 
     // add imageURL here

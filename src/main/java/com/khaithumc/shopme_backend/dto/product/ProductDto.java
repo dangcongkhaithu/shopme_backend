@@ -13,7 +13,6 @@ public class ProductDto {
     private @NotNull double price;
     private @NotNull String description;
     private @NotNull Integer categoryId;
-    private @NotNull List<Image> images;
 
     public ProductDto(Product product) {
         this.setId(product.getId());
@@ -22,24 +21,15 @@ public class ProductDto {
         this.setDescription(product.getDescription());
         this.setPrice(product.getPrice());
         this.setCategoryId(product.getCategory().getId());
-        this.setImages(product.getImages());
     }
 
-    public List<Image> getImages() {
-        return images;
-    }
 
-    public void setImages(List<Image> images) {
-        this.images = images;
-    }
-
-    public ProductDto(@NotNull String name, @NotNull String imageURL, @NotNull double price, @NotNull String description, @NotNull Integer categoryId, @NotNull List<Image> images) {
+    public ProductDto(@NotNull String name, @NotNull String imageURL, @NotNull double price, @NotNull String description, @NotNull Integer categoryId) {
         this.name = name;
         this.imageURL = imageURL;
         this.price = price;
         this.description = description;
         this.categoryId = categoryId;
-        this.images = images;
     }
 
     public ProductDto() {

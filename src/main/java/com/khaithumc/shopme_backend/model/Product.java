@@ -36,9 +36,6 @@ public class Product {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
     private List<Cart> carts;
 
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "product")
-    private List<Image> images;
 
     public Product(ProductDto productDto, ChildCategory category) {
         this.name = productDto.getName();
@@ -118,11 +115,4 @@ public class Product {
                 '}';
     }
 
-    public List<Image> getImages() {
-        return images;
-    }
-
-    public void setImages(List<Image> images) {
-        this.images = images;
-    }
 }

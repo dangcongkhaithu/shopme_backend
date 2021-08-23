@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ShopmeBackendApplication /*implements CommandLineRunner*/ {
 
-    /*@Autowired
+   /* @Autowired
     private UserService userService;*/
 
     public static void main(String[] args) {
